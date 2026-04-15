@@ -6,7 +6,7 @@ const fs = require('fs');
 const db = require('./database');
 
 const app = express();
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 
 // Crear carpeta de vouchers si no existe
 const vouchersDir = path.join(__dirname, 'vouchers');
