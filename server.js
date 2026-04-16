@@ -6,6 +6,7 @@ const fs = require('fs');
 const db = require('./database');
 
 const app = express();
+app.get('/api/status', (req, res) => res.json({ ok: true }));
 const PORT = process.env.PORT || 3000;
 
 // Crear carpeta de vouchers si no existe
