@@ -45,6 +45,15 @@ function authMiddleware(req, res, next) {
 }
 
 // LOGIN
+
+const usuariosDefault = [
+  { usuario: 'julie', password: 'ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f' },
+  { usuario: 'jorge', password: 'ef797c8118f02dfb649607dd5d3f8c7623048c9c063d532cc95c5ed7a898a64f' }
+];
+usuariosDefault.forEach(u => {
+  try { db.prepare('INSERT OR IGNORE INTO usuarios (usuario, password) VALUES (?, ?)').run(u.usuario, u.password); } catch(e) {}
+});
+
 app.post('/api/login', (req, res) => {
   const { usuario, password } = req.body;
   if (!usuario || !password) return res.status(400).json({ error: 'Faltan datos' });
