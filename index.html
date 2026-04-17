@@ -103,7 +103,20 @@ textarea.input{resize:vertical;min-height:80px}
 @media(max-width:600px){.app-header{padding:var(--space-3) var(--space-4)}.payment-item{grid-template-columns:auto 1fr auto}.has-voucher{display:none}}
 </style>
 </head>
-<body>
+<body><div id='login-screen' style='display:flex;align-items:center;justify-content:center;min-height:100vh;background:var(--bg-primary)'>
+<div style='background:var(--bg-card);padding:2rem;border-radius:12px;width:100%;max-width:360px;box-shadow:0 4px 20px rgba(0,0,0,0.15)'>
+<h2 style='text-align:center;margin-bottom:1.5rem;color:var(--color-primary)'>Control de Pagos</h2>
+<div style='margin-bottom:1rem'>
+<label style='display:block;margin-bottom:0.4rem;font-size:0.85rem;color:var(--text-secondary)'>Usuario</label>
+<input id='login-usuario' type='text' placeholder='Tu usuario' style='width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:8px;background:var(--bg-input);color:var(--text-primary);font-size:1rem'>
+</div>
+<div style='margin-bottom:1.5rem'>
+<label style='display:block;margin-bottom:0.4rem;font-size:0.85rem;color:var(--text-secondary)'>Contraseña</label>
+<input id='login-password' type='password' placeholder='Tu contraseña' style='width:100%;padding:0.6rem;border:1px solid var(--border);border-radius:8px;background:var(--bg-input);color:var(--text-primary);font-size:1rem'>
+</div>
+<button onclick='hacerLogin()' style='width:100%;padding:0.75rem;background:var(--color-primary);color:white;border:none;border-radius:8px;font-size:1rem;cursor:pointer'>Ingresar</button>
+<p id='login-error' style='color:red;text-align:center;margin-top:1rem;display:none'>Usuario o contraseña incorrectos</p>
+</div></div>
 
 <header class="app-header">
   <div class="app-logo">
@@ -335,7 +348,7 @@ async function eliminarPago() {
 
 async function exportarCSV() {
   try {
-    const res = await fetch(API + '/pagos');
+    const res = await fetch(API + '/pagos', {headers: {...getHeaders(),headers: getHeaders()});
     const pagos = await res.json();
     if (!pagos.length) { showToast('⚠️ No hay pagos para exportar'); return; }
     const resumen = {};
@@ -355,7 +368,7 @@ ${pagos.map(p=>`<tr><td>${p.id}</td><td>${p.tipo}</td><td>${p.mes}</td><td>${p.a
 <tr><th>Tipo</th><th>Total (S/)</th></tr>
 ${Object.entries(resumen).map(([tipo,total])=>`<tr><td>${tipo}</td><td>${total.toFixed(2)}</td></tr>`).join('')}
 <tr><td><b>TOTAL GENERAL</b></td><td><b>${totalGeneral.toFixed(2)}</b></td></tr>
-</table></body></html>`;
+</table></div></body></html>`;
     const blob = new Blob([html], { type: 'application/vnd.ms-excel;charset=utf-8;' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
