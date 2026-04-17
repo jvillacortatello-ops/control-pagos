@@ -335,17 +335,36 @@ async function eliminarPago() {
 
 async function exportarCSV() {
   try {
-    const res=await fetch(API+'/pagos'); const pagos=await res.json();
-    if(!pagos.length){showToast('⚠️ No hay pagos para exportar');return;}
-    const headers=['ID','Tipo','Mes','Año','Monto (S/)','Fecha Pago','Observaciones','Voucher'];
-    const rows=pagos.map(p=>[p.id,p.tipo,p.mes,p.anio,p.monto.toFixed(2),p.fecha_pago,p.observacion||'',p.voucher_path?'Sí':'No']);
-    const csv=[headers,...rows].map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
-    const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
-    const a=document.createElement('a'); a.href=URL.createObjectURL(blob);
-    a.download=`pagos_${new Date().toISOString().split('T')[0]}.csv`; a.click();
-    showToast('📥 CSV exportado');
+    const res = await fetch(API + '/pagos');
+    const pagos = await res.json();
+    if (!pagos.length) { showToast('⚠️ No hay pagos para exportar'); return; }
+    const resumen = {};
+    pagos.forEach(p => {
+      if (!resumen[p.tipo]) resumen[p.tipo] = 0;
+      resumen[p.tipo] += parseFloat(p.monto);
+    });
+    const totalGeneral = pagos.reduce((s, p) => s + parseFloat(p.monto), 0);
+    const html = `<html><head><meta charset="UTF-8"></head><body>
+<h2>Control de Pagos - Detalle</h2>
+<table border="1">
+<tr><th>ID</th><th>Tipo</th><th>Mes</th><th>Año</th><th>Monto (S/)</th><th>Fecha Pago</th><th>Observaciones</th><th>Voucher</th></tr>
+${pagos.map(p=>`<tr><td>${p.id}</td><td>${p.tipo}</td><td>${p.mes}</td><td>${p.anio}</td><td>${parseFloat(p.monto).toFixed(2)}</td><td>${p.fecha_pago}</td><td>${p.observacion||''}</td><td>${p.voucher_path?'Sí':'No'}</td></tr>`).join('')}
+</table><br>
+<h2>Resumen por Tipo</h2>
+<table border="1">
+<tr><th>Tipo</th><th>Total (S/)</th></tr>
+${Object.entries(resumen).map(([tipo,total])=>`<tr><td>${tipo}</td><td>${total.toFixed(2)}</td></tr>`).join('')}
+<tr><td><b>TOTAL GENERAL</b></td><td><b>${totalGeneral.toFixed(2)}</b></td></tr>
+</table></body></html>`;
+    const blob = new Blob([html], { type: 'application/vnd.ms-excel;charset=utf-8;' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `pagos_${new Date().toISOString().split('T')[0]}.xls`;
+    a.click();
+    showToast('📊 Excel exportado');
   } catch { showToast('❌ Error al exportar'); }
 }
+
 
 // === RENDER ===
 function renderList(pagos) {
