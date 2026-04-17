@@ -204,7 +204,19 @@ textarea.input{resize:vertical;min-height:80px}
 <div id="toast-container" aria-live="polite"></div>
 
 <script>
-const API = '/api';
+const API = window.location.origin;
+let TOKEN = localStorage.getItem('token') || '';
+function getHeaders() { return {'Content-Type': 'application/json', 'authorization': TOKEN}; }
+window.onload = async () => {
+  if (TOKEN) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app-root').style.display = 'block';
+    await cargarPagos();
+    await cargarResumen();
+  }
+};
+
+
 const TIPO_COLORS = {Alquiler:'#01696f',Luz:'#d19900',Agua:'#006494',Mantenimiento:'#964219',Internet:'#7a39bb',Otros:'#7a7974'};
 let selectedId = null;
 let voucherFile = null;
@@ -368,7 +380,7 @@ ${pagos.map(p=>`<tr><td>${p.id}</td><td>${p.tipo}</td><td>${p.mes}</td><td>${p.a
 <tr><th>Tipo</th><th>Total (S/)</th></tr>
 ${Object.entries(resumen).map(([tipo,total])=>`<tr><td>${tipo}</td><td>${total.toFixed(2)}</td></tr>`).join('')}
 <tr><td><b>TOTAL GENERAL</b></td><td><b>${totalGeneral.toFixed(2)}</b></td></tr>
-</table></div></body></html>`;
+</table></div></div></body></html>`;
     const blob = new Blob([html], { type: 'application/vnd.ms-excel;charset=utf-8;' });
     const a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
