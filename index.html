@@ -204,7 +204,7 @@ textarea.input{resize:vertical;min-height:80px}
 <div id="toast-container" aria-live="polite"></div>
 
 <script>
-const API = window.location.origin;
+const API = window.location.origin + '/api';
 let TOKEN = localStorage.getItem('token') || '';
 function getHeaders() { return {'Content-Type': 'application/json', 'authorization': TOKEN}; }
 window.onload = async () => {
