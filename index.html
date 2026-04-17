@@ -360,7 +360,7 @@ async function eliminarPago() {
 
 async function exportarCSV() {
   try {
-    const res = await fetch(API + '/pagos', {headers: {...getHeaders(),headers: getHeaders()});
+    const res = await fetch(API + '/pagos', {headers: getHeaders()});
     const pagos = await res.json();
     if (!pagos.length) { showToast('⚠️ No hay pagos para exportar'); return; }
     const resumen = {};
