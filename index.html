@@ -5,7 +5,27 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Control de Pagos - Departamento</title>
 <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600,700&display=swap" rel="stylesheet">
-<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js">async function hacerLogin() {
+  const usuario = document.getElementById('login-usuario').value.trim();
+  const password = document.getElementById('login-password').value.trim();
+  if (!usuario || !password) return showToast('Ingresa usuario y contrasena');
+  try {
+    const res = await fetch(API + '/login', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({usuario, password})
+    });
+    const data = await res.json();
+    if (!res.ok) return showToast('Error: ' + (data.error || 'Credenciales incorrectas'));
+    TOKEN = data.token;
+    localStorage.setItem('token', data.token);
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app-root').style.display = 'block';
+    await cargarPagos();
+    await cargarResumen();
+  } catch(e) { showToast('Error de conexion'); }
+}
+</script>
 <style>
 :root,[data-theme="light"]{--color-bg:#f7f6f2;--color-surface:#f9f8f5;--color-surface-2:#fbfbf9;--color-surface-offset:#f3f0ec;--color-surface-offset-2:#edeae5;--color-surface-dynamic:#e6e4df;--color-divider:#dcd9d5;--color-border:#d4d1ca;--color-text:#28251d;--color-text-muted:#7a7974;--color-text-faint:#bab9b4;--color-text-inverse:#f9f8f4;--color-primary:#01696f;--color-primary-hover:#0c4e54;--color-primary-active:#0f3638;--color-primary-highlight:#cedcd8;--color-success:#437a22;--color-error:#a12c7b;--color-warning:#964219;--color-orange:#da7101;--color-gold:#d19900;--color-blue:#006494;--color-purple:#7a39bb;--radius-sm:.375rem;--radius-md:.5rem;--radius-lg:.75rem;--radius-xl:1rem;--radius-full:9999px;--space-1:.25rem;--space-2:.5rem;--space-3:.75rem;--space-4:1rem;--space-5:1.25rem;--space-6:1.5rem;--space-8:2rem;--space-10:2.5rem;--space-12:3rem;--text-xs:clamp(.75rem,.7rem + .25vw,.875rem);--text-sm:clamp(.875rem,.8rem + .35vw,1rem);--text-base:clamp(1rem,.95rem + .25vw,1.125rem);--text-lg:clamp(1.125rem,1rem + .75vw,1.5rem);--text-xl:clamp(1.5rem,1.2rem + 1.25vw,2.25rem);--shadow-sm:0 1px 2px oklch(.2 .01 80/.06);--shadow-md:0 4px 12px oklch(.2 .01 80/.08);--shadow-lg:0 12px 32px oklch(.2 .01 80/.12);--transition:180ms cubic-bezier(.16,1,.3,1);--font-body:'Satoshi','Helvetica Neue',sans-serif;--content-default:1100px}
 [data-theme="dark"]{--color-bg:#171614;--color-surface:#1c1b19;--color-surface-2:#201f1d;--color-surface-offset:#1d1c1a;--color-surface-offset-2:#22211f;--color-surface-dynamic:#2d2c2a;--color-divider:#262523;--color-border:#393836;--color-text:#cdccca;--color-text-muted:#797876;--color-text-faint:#5a5957;--color-text-inverse:#2b2a28;--color-primary:#4f98a3;--color-primary-hover:#227f8b;--color-primary-active:#1a626b;--color-primary-highlight:#313b3b;--color-success:#6daa45;--color-error:#d163a7;--color-warning:#bb653b;--color-orange:#fdab43;--color-gold:#e8af34;--color-blue:#5591c7;--color-purple:#a86fdf;--shadow-sm:0 1px 2px oklch(0 0 0/.2);--shadow-md:0 4px 12px oklch(0 0 0/.3);--shadow-lg:0 12px 32px oklch(0 0 0/.4)}
